@@ -5,9 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Intrefaces\" />
-    <Folder Include="Intrefaces\Services\" />
-    <Folder Include="Intrefaces\Repositories\" />
+    <ProjectReference Include="..\Produtos.Domain\Produtos.Domain.csproj" />
   </ItemGroup>
 
 </Project>
