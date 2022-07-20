@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Produtos.Domain.Configuration;
 using Produtos.Domain.Entities;
 using System;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace Produtos.Infra.Data
         {
             base.OnModelCreating(modelBuilder);
             
-            //modelBuilder.ApplyConfiguration(new ProdutoConfig());
+            modelBuilder.ApplyConfiguration(new ProdutoConfig());
         }
        
         public DbSet<Produto> Produtos { get; set; }

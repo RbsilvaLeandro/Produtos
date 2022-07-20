@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
+using FluentValidation.Results;
 using Produtos.Application.DTO;
 using Produtos.Application.Interfaces;
+using Produtos.Application.Validator;
 using Produtos.Domain.Core.Intrefaces.Services;
 using Produtos.Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,9 +22,36 @@ namespace Produtos.Application
             _mapper = mapper;
         }
         public void Add(ProdutoDTO ProdutoDTO)
-        {
+        {      
             var produto = _mapper.Map<Produto>(ProdutoDTO);
             _produtoService.Add(produto);
+        }
+
+        public ResultadoBuscaProdutosModel BuscaPaginada(RequisicaoBuscaProdutosModel requisicao)
+        {
+            var produtos = _produtoService.GetAll();            
+
+            if (!string.IsNullOrEmpty(requisicao.filtroNome) || requisicao.filtroId > 0)
+            {
+                produtos = requisicao.filtroId > 0 ?
+                    produtos.Where(p => p.Id == requisicao.filtroId).ToList() :
+                    produtos.Where(p => p.Nome.Contains(requisicao.filtroNome)).ToList();
+            }
+
+            var itensBusca = new ResultadoBuscaPaginadaModel()
+            {
+                paginaAtual = requisicao.RequisicaoBuscaPaginadaModel.paginaAtual,
+                totalItens = produtos.Count(),
+                totalPaginas = (int)Math.Ceiling(produtos.Count() / (double)requisicao.RequisicaoBuscaPaginadaModel.itensPorPagina)
+            };
+            var produtoDto = _mapper.Map<IEnumerable<ProdutoDTO>>(produtos);
+            var ListaItens = new ResultadoBuscaProdutosModel()
+            {
+                paginacao = itensBusca,
+                items = produtoDto.Skip((requisicao.RequisicaoBuscaPaginadaModel.paginaAtual - 1) * requisicao.RequisicaoBuscaPaginadaModel.itensPorPagina).Take(requisicao.RequisicaoBuscaPaginadaModel.itensPorPagina).ToList()
+            };
+            
+            return ListaItens;
         }
 
         public IEnumerable<ProdutoDTO> GetAll()
@@ -30,7 +60,7 @@ namespace Produtos.Application
             return _mapper.Map<IEnumerable<ProdutoDTO>>(produto);
         }
 
-        public ProdutoDTO GetById(int id)
+        public ProdutoDTO GetById(long id)
         {
             var produto = _produtoService.GetById(id);
             return _mapper.Map<ProdutoDTO>(produto);
@@ -46,6 +76,14 @@ namespace Produtos.Application
         {
             var produto = _mapper.Map<Produto>(ProdutoDTO);
             _produtoService.Update(produto);
+        }
+
+        public List<ValidationFailure> ValidarModel(ProdutoDTO produtoDto)
+        {
+            ProdutoDTOIncluirValidator validator = new ProdutoDTOIncluirValidator();
+
+            var validatorModel = validator.Validate(produtoDto);
+            return validatorModel.Errors;
         }
     }
 }

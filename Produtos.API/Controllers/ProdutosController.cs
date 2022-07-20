@@ -2,6 +2,8 @@
 using Produtos.Application.DTO;
 using Produtos.Application.Interfaces;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Produtos.API.Controllers
 {
@@ -9,10 +11,10 @@ namespace Produtos.API.Controllers
     [Route("[controller]")]
     public class ProdutosController : Controller
     {
-        private readonly IApplicationProdutoService _applicationServiceProduto;
+        private readonly IApplicationProdutoService _applicationServiceProduto;       
         public ProdutosController(IApplicationProdutoService applicationServiceProduto)
         {
-            _applicationServiceProduto = applicationServiceProduto;
+            _applicationServiceProduto = applicationServiceProduto;            
         }
 
         [HttpGet]
@@ -22,21 +24,42 @@ namespace Produtos.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        public ActionResult<string> Get(long id)
         {
             return Ok(_applicationServiceProduto.GetById(id));
         }
 
+        [HttpPost("BuscaPaginada")]
+        public ActionResult BuscaPaginada([FromBody] RequisicaoBuscaProdutosModel requisicao)
+        {
+            return Ok(_applicationServiceProduto.BuscaPaginada(requisicao));
+        }
+
         [HttpPost]
-        public ActionResult Post([FromBody] ProdutoDTO produtoDTO)
+        public async Task<IActionResult> Post([FromBody] ProdutoDTO produtoDTO)
         {
             try
             {
+                List<string> Errors = new List<string>();
+                var validarModel = _applicationServiceProduto.ValidarModel(produtoDTO);
+
+                if(validarModel.Count > 0)
+                {
+                    foreach (var erros in validarModel)
+                        Errors.Add(erros.ErrorMessage);
+
+                    return BadRequest(Errors);
+                }
+
                 if (produtoDTO == null)
                     return NotFound();
 
+                if (produtoDTO.Id > 0)
+                    _applicationServiceProduto.Update(produtoDTO);
+
                 _applicationServiceProduto.Add(produtoDTO);
-                return Ok("Produto cadastrado com sucesso");
+
+                return Ok(produtoDTO.Id > 0 ? "Produto atualizado com sucesso" : "Produto cadastrado com sucesso");
             }
             catch (Exception ex)
             {
@@ -49,8 +72,19 @@ namespace Produtos.API.Controllers
         {
             try
             {
-                if (produtoDTO == null)
-                    return NotFound();
+                List<string> Errors = new List<string>();
+                var validarModel = _applicationServiceProduto.ValidarModel(produtoDTO);
+
+                if (produtoDTO.Id <= 0)
+                    return BadRequest("Informe o id do produto");
+
+                if (validarModel.Count > 0)
+                {
+                    foreach (var erros in validarModel)
+                        Errors.Add(erros.ErrorMessage);
+
+                    return BadRequest(Errors);
+                }             
 
                 _applicationServiceProduto.Update(produtoDTO);
                 return Ok("Produto atualizado com sucesso");
@@ -60,11 +94,13 @@ namespace Produtos.API.Controllers
                 throw ex;
             }
         }
-        [HttpDelete()]
-        public ActionResult Delete([FromBody] ProdutoDTO produtoDTO)
+        [HttpDelete("{id}")]
+        public ActionResult Delete(int id)
         {
             try
             {
+                var produtoDTO = _applicationServiceProduto.GetById(id);
+
                 if (produtoDTO == null)
                     return NotFound();
 

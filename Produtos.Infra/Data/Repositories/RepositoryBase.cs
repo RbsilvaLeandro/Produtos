@@ -32,7 +32,7 @@ namespace Produtos.Infra.Data.Repositories
             return sqlContext.Set<Tentity>().ToList();
         }
 
-        public Tentity GetById(int id)
+        public Tentity GetById(long id)
         {
             return sqlContext.Set<Tentity>().Find(id);
         }
@@ -41,6 +41,7 @@ namespace Produtos.Infra.Data.Repositories
         {
             try
             {
+                sqlContext.ChangeTracker.Clear();
                 sqlContext.Set<Tentity>().Remove(obj);
                 sqlContext.SaveChanges();
             }

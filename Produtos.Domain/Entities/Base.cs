@@ -1,7 +1,10 @@
-﻿namespace Produtos.Domain.Entities
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Produtos.Domain.Entities
 {
     public class Base
     {
-        public int Id { get; set; }
+        [Column(TypeName = "bigint")]
+        public long Id { get; set; }
     }
 }

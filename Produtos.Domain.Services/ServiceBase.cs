@@ -23,7 +23,7 @@ namespace Produtos.Domain.Services
             return _repositoryBase.GetAll();
         }
 
-        public Tentity GetById(int id)
+        public Tentity GetById(long id)
         {
             return _repositoryBase.GetById(id);
         }

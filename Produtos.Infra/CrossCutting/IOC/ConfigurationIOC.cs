@@ -21,6 +21,7 @@ namespace Produtos.Infra.CrossCutting.IOC
             builder.RegisterType<ProdutoService>().As<IProdutoService>();
        
             builder.RegisterType<ProdutoRepository>().As<IProdutoRepository>();
+           
 
             #endregion
 

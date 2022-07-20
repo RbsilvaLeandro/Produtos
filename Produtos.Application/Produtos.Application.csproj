@@ -6,11 +6,11 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
+    <PackageReference Include="FluentValidation" Version="11.1.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Produtos.Domain.Core\Produtos.Domain.Core.csproj" />
-    <ProjectReference Include="..\Produtos.Domain\Produtos.Domain.csproj" />
   </ItemGroup>
 
 </Project>

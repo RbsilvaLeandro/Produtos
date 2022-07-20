@@ -1,4 +1,5 @@
-﻿using Produtos.Application.DTO;
+﻿using FluentValidation.Results;
+using Produtos.Application.DTO;
 using System.Collections.Generic;
 
 namespace Produtos.Application.Interfaces
@@ -9,6 +10,8 @@ namespace Produtos.Application.Interfaces
         void Update(ProdutoDTO produtoDTO);
         void Remove(ProdutoDTO produtoDTO);
         IEnumerable<ProdutoDTO> GetAll();
-        ProdutoDTO GetById(int id);      
+        ProdutoDTO GetById(long id);
+        ResultadoBuscaProdutosModel BuscaPaginada(RequisicaoBuscaProdutosModel requisicao);
+        List<ValidationFailure> ValidarModel(ProdutoDTO produtoDto);
     }
 }

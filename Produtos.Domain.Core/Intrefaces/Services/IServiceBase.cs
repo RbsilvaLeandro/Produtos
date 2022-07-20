@@ -8,6 +8,6 @@ namespace Produtos.Domain.Core.Intrefaces.Services
         void Update(Tentity obj);
         void Remove(Tentity obj);
         IEnumerable<Tentity> GetAll();
-        Tentity GetById(int id);
+        Tentity GetById(long id);
     }
 }

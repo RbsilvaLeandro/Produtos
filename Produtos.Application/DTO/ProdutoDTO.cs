@@ -1,10 +1,11 @@
-﻿namespace Produtos.Application.DTO
+﻿using System;
+
+namespace Produtos.Application.DTO
 {
     public class ProdutoDTO
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public string Nome { get; set; }
-        public decimal Preco { get; set; }      
-
+        public decimal Preco { get; set; }              
     }
 }
